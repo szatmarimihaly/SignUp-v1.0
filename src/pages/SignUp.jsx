@@ -1,6 +1,7 @@
-import "../styles/signup.css";
+import "../styles/sign.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+
 
 
 function SignUp() {
@@ -10,6 +11,12 @@ function SignUp() {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
     const [ error, setError ] = useState('');
+
+    const [ showPassword, setShowPassword ] = useState(false);
+
+    const toogleVisibility = () => {
+        setShowPassword((prev) => !prev);
+    }
 
 
 
@@ -45,31 +52,43 @@ function SignUp() {
 
     return (
         <div className="signup-container">
-            <h1>Sign Up</h1>
+            <h1>Create an Account</h1>
             <div className="input-container">
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required/>
 
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required/>
+                <div className="display-container">
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required/>
+                </div>
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required/>
+                <div className="display-container">
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required/>
+                </div>
+
+                <div className="pass-container">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required/>
+
+                    <button onClick = {() => setShowPassword(!showPassword)}>
+                        <i className = {showPassword ? "ri-eye-off-line" : "ri-eye-line"}></i>
+                    </button>
+
+                </div>
             </div>
             <button className="sign-in-btn" onClick={handleSignUp}>Sign Up</button>
-            {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+            {error && <p style={{color: "red", marginTop: "10px"}}>{error}</p>}
             <button className="sign-up-link" onClick={() => navigate('/Sign-In')}>Already have an account? Sign In
             </button>
         </div>

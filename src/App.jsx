@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import SignUp from "./pages/SignUp.jsx";
 import SignIn from "./pages/SignIn.jsx";
 import Home from "./pages/Home.jsx";
+import 'remixicon/fonts/remixicon.css';
+
 
 export default function App() {
     const isAuthenticated = !!localStorage.getItem("token");

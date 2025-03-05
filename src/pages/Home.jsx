@@ -6,7 +6,7 @@ function Home() {
     const [username, setUsername] = useState("");
 
     useEffect(() => {
-        const storedUsername = localStorage.getItem("username");
+        const storedUsername = sessionStorage.getItem("username");
         if (!storedUsername) {
             navigate("/Sign-In");
         } else {

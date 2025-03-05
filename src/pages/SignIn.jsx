@@ -7,6 +7,12 @@ function SignIn() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    const [ showPassword, setShowPassword ] = useState(false);
+
+    const toogleVisibility = () => {
+        setShowPassword((prev) => !prev);
+    }
+
     const handleSignIn = async () => {
         setError('');
 
@@ -45,25 +51,35 @@ function SignIn() {
 
     return (
         <div className="signup-container">
-            <h1>Sign In</h1>
+            <h1>Sign In Now</h1>
             <div className="input-container">
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+
+                <div className="display-container">
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <div className="pass-container">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required/>
+
+                    <button onClick={() => setShowPassword(!showPassword)}>
+                        <i className={showPassword ? "ri-eye-off-line" : "ri-eye-line"}></i>
+                    </button>
+
+                </div>
             </div>
             <button className="sign-in-btn" onClick={handleSignIn}>Sign In</button>
-            {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+            {error && <p style={{color: "red", marginTop: "10px"}}>{error}</p>}
             <button className="sign-up-link" onClick={() => navigate('/Sign-Up')}>
                 Don't have an account? Sign up
             </button>
