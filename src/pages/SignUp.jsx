@@ -6,6 +6,7 @@ import { useState } from "react";
 function SignUp() {
     const navigate = useNavigate();
 
+    const [ username, setUsername ] = useState('');
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
     const [ error, setError ] = useState('');
@@ -13,8 +14,15 @@ function SignUp() {
 
 
     const handleSignUp = async () => {
-        if (!email || !password) {
-            setError("Email and password are required");
+        setError('');
+
+        if (!username || !email || !password) {
+            setError("Username, email, and password are required");
+            return;
+        }
+
+        if (password.length < 12){
+            setError("Passwords must be 12 characters long");
             return;
         }
 
@@ -22,7 +30,7 @@ function SignUp() {
             const res = await fetch("http://localhost:5000/api/auth/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }), // Biztosan JSON formátumban küldi
+                body: JSON.stringify({ username, email, password }), // Küldjük a `username`-et is!
             });
 
             const data = await res.json();
@@ -40,20 +48,30 @@ function SignUp() {
             <h1>Sign Up</h1>
             <div className="input-container">
                 <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required/>
+
+                <input
                     type="email"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    required />
+                    required/>
+
                 <input
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required />
+                    required/>
             </div>
             <button className="sign-in-btn" onClick={handleSignUp}>Sign Up</button>
-            <button className="sign-up-link" onClick={() => navigate('/Sign-In')}>Already have an account? Sign In</button>
+            {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+            <button className="sign-up-link" onClick={() => navigate('/Sign-In')}>Already have an account? Sign In
+            </button>
         </div>
     );
 }

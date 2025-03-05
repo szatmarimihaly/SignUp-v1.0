@@ -7,48 +7,56 @@ const router = express.Router();
 
 // REGISTRATION
 router.post("/signup", async (req, res) => {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: "Username, email, and password are required" });
+    }
+
+    if (password.length < 12){
+        return res.status(400).json({ message: "Password must be at least 12 characters long." });
     }
 
     try {
-        let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ message: "User already exists" });
+        let user = await User.findOne({ username });
+        if (user) return res.status(400).json({ message: "Username already exists" });
 
-        const salt = await bcrypt.genSalt(10);
+        let emailExists = await User.findOne({ email });
+        if (emailExists) return res.status(400).json({ message: "Email already exists" });
+
+        const salt = await bcrypt.genSalt(12);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        user = new User({ email, password: hashedPassword });
+        user = new User({ username, email, password: hashedPassword });
         await user.save();
 
         res.status(201).json({ message: "User registered successfully" });
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        console.error("🔥 Error in signup:", err);  // Logoljunk ki mindent
+        res.status(500).json({ message: "Server error", error: err.message });
     }
 });
 
 // LOGIN
 router.post("/signin", async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
+    if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
     }
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ username });
         if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = jwt.sign({ id: user._id, username : user.username }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-        res.json({ token, user: { id: user._id, email: user.email } });
+        res.json({ token, user: { id: user._id, username: user.username } });
     } catch (err) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Server error", error : err.message });
     }
 });
 

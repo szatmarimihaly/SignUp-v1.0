@@ -3,13 +3,15 @@ import { useNavigate } from "react-router-dom";
 
 function SignIn() {
     const navigate = useNavigate();
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
     const handleSignIn = async () => {
-        if (!email || !password) {
-            setError("Email and password are required");
+        setError('');
+
+        if (!username || !password) {
+            setError("Username and password are required");
             return;
         }
 
@@ -17,17 +19,27 @@ function SignIn() {
             const res = await fetch("http://localhost:5000/api/auth/signin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }), // Biztosan JSON formátumban küldi
+                body: JSON.stringify({ username, password }), // Biztosan JSON formátumban küldi
             });
 
             const data = await res.json();
-            if (!res.ok) throw new Error(data.message);
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("email", data.user.email);
+            if (!res.ok) {
+                if (res.status === 400) {
+                    setError("🔐 Invalid username or password. 🔐")
+                }else{
+                    setError("❌ Server Error. Please try again later! ❌")
+                }
+                return;
+            }
+
+            sessionStorage.setItem("token", data.token);
+            sessionStorage.setItem("username", data.user.username);
             navigate("/Home");
+
         } catch (err) {
-            setError(err.message);
+            console.error("❌ Sign-in error:", err.message);
+            setError("❌ Something went wrong! ❌");
         }
     };
 
@@ -36,10 +48,10 @@ function SignIn() {
             <h1>Sign In</h1>
             <div className="input-container">
                 <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                 />
                 <input
@@ -51,7 +63,7 @@ function SignIn() {
                 />
             </div>
             <button className="sign-in-btn" onClick={handleSignIn}>Sign In</button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
             <button className="sign-up-link" onClick={() => navigate('/Sign-Up')}>
                 Don't have an account? Sign up
             </button>

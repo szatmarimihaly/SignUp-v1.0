@@ -6,17 +6,17 @@ function Home() {
     const [username, setUsername] = useState("");
 
     useEffect(() => {
-        const email = localStorage.getItem("email");
-        if (!email) {
+        const storedUsername = localStorage.getItem("username");
+        if (!storedUsername) {
             navigate("/Sign-In");
         } else {
-            setUsername(email.split("@")[0]); // E-mail @ előtti részét használjuk
+            setUsername(storedUsername);
         }
     }, [navigate]);
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("email");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("username");
         navigate("/Sign-In");
     };
 

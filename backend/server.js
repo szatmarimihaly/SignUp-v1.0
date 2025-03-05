@@ -20,7 +20,7 @@ app.use("/api/auth", authRoutes);
 
 // Home endpoint (védett)
 app.get("/api/home", authMiddleware, (req, res) => {
-    res.json({ message: `Welcome, user ${req.user.id}` });
+    res.json({ message: `Welcome, user ${req.user.username}` });
 });
 
 const PORT = process.env.PORT || 5000;
